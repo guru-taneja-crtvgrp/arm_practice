@@ -16,7 +16,7 @@ void timerISR(void) __irq
 		flag = 0;
 	}
 	VICVectAddr = 0x00;
-  T0TCR = 0x01;				 //Start Timer
+    T0TCR = 0x01;				 //Start Timer
 	T0IR = 1;
 }
 int main()
