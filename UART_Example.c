@@ -1,9 +1,21 @@
 #include<LPC214X.h>
-char rx;
+char rx[5],l=0;
 __irq void uart_isr(void)
 {
+	int iir_value;
+	iir_value = U0IIR;
+	IO0CLR = 0x00000004;
+		VICVectAddr = 0x00;
+	//while ( !(iir_value & 0x01) );
+//	if( iir_value & 0x00000004 )
+//	{
+//		rx[l] = U0RBR;
+//	}
+//	U0THR = rx[l];
+//	l++;
 	//while( (U0LSR & 0x40) == 0 );
-	VICVectAddr = 0x00;
+	//memset((void *)U0THR,0,4);
+
 }
 void uart_init(void)
 {
@@ -16,10 +28,10 @@ void uart_init(void)
 }
 void interrupt_init(void)
 {
-	VICIntSelect = 0x00000000;	        /* UART0 configured as IRQ */
-	VICIntEnable = 0x00000040;	        /* Enable UART0 interrupt */
-	VICVectCntl0 = 0x00000026;	        /* Enable UART0 IRQ slot */
 	VICVectAddr0 = (unsigned) uart_isr;	/* UART0 ISR Address */
+	VICVectCntl0 = 0x00000026;	/* Enable UART0 IRQ slot */
+	VICIntEnable = 0x00000040;	/* Enable UART0 interrupt */
+	VICIntSelect = 0x00000000;	/* UART0 configured as IRQ */
 }
 void pll_init(void)
 {
@@ -33,11 +45,32 @@ void pll_init(void)
 	PLL0FEED = 0x55;
 	VPBDIV = 0x01;
 }
+void delay()
+{
+T0TCR=0X02;
+T0CTCR=0X00;
+T0PR=0X1D;
+T0MR0=10000000;
+T0MCR=0X0006;
+	T0TCR=0X01;
+while(T0TC<10000000);
+T0TCR=0X00;
+}
 int main(void)
 {
+	IO0DIR = 0x00000004;
+	unsigned char i[] = {'a','b','c','d','e'};
+	unsigned int j,k;
 	pll_init();
 	uart_init();
-  //interrupt_init();
-	U0THR = 'A';
+  interrupt_init();
+	for (j=0;j<5;j++)
+	{
+	    U0THR = i[j];
+		  IO0SET = 0x00000004;
+		  delay();
+	}
+	
+	//U0THR = i[0];
 	while(1);
 }
