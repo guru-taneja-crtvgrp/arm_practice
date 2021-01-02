@@ -21,7 +21,7 @@ void timerISR(void) __irq
 }
 int main()
 {
-	IO0DIR = 0x0000FFFF;
+	IO0DIR = 0x000000FF;
 	timer_init();
 	interrupt_init();
 	T0TCR = 0x01;        //Enable Timer
