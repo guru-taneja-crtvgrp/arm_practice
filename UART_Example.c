@@ -80,7 +80,7 @@ int main(void)
 	pll_init();
 	uart_init();
   interrupt_init();
-	U0THR = 'A';
+	U0THR = 'b';
 
 		U0THR = 'b';
 
